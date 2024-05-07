@@ -34,6 +34,24 @@ public class KhachHang_DAO {
 		return dskh;
 	}
 	
+	public String getTenKHTheoMa(String maKH) { 
+	    String tenKH = null;
+	    ConnectDB.getIntance();
+	    Connection con = ConnectDB.getConnection();
+	    String sql = "SELECT tenKhachHang FROM KhachHang WHERE maKhachHang = ?";
+	    try {
+	        PreparedStatement pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1,maKH);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	        	tenKH = rs.getString("tenKhachHang");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return tenKH;
+	}
+	
 	public boolean update(KhachHang kh) {
 		ConnectDB.getIntance();
 		Connection con = ConnectDB.getConnection();

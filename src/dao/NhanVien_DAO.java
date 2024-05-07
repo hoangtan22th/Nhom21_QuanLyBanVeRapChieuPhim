@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,6 +36,24 @@ public class NhanVien_DAO {
 			e.printStackTrace();
 		}
 		return dsNhanVien;
+	}
+	
+	public String getTenNVTheoMa(String maNV) { 
+	    String tenNV = null;
+	    ConnectDB.getIntance();
+	    Connection con = ConnectDB.getConnection();
+	    String sql = "SELECT tenNhanVien FROM NhanVien WHERE maNhanVien = ?";
+	    try {
+	        PreparedStatement pstmt = con.prepareStatement(sql);
+	        pstmt.setString(1,maNV);
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) {
+	            tenNV = rs.getString("tenNhanVien");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return tenNV;
 	}
 	
 	public NhanVien getNVTheoMa(String ma) { 

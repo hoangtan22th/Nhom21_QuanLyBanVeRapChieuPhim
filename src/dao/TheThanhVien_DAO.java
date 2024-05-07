@@ -98,7 +98,7 @@ public class TheThanhVien_DAO {
             }
             else{
             	maxMaTTV = maxMaTTV.trim();
-                int num = Integer.parseInt(maxMaTTV.substring(2)) + 1;
+                int num = Integer.parseInt(maxMaTTV.substring(3)) + 1;
                 id = String.format("TTV%03d", num);
             }
         }

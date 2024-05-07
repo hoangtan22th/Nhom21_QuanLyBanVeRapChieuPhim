@@ -396,8 +396,12 @@ public class QuanLyKhachHang extends JPanel {
         int selectedRow = table.getSelectedRow();
         String maKH = txtMa.getText().trim();
         if (selectedRow != -1) {
-            tableModel.removeRow(selectedRow);
-            KH_DAO.xoaKhachHang(maKH);
+        	if (JOptionPane.showConfirmDialog(this, "Chắc chắn xóa khách hàng này?", "Cảnh báo", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        		tableModel.removeRow(selectedRow);
+        		KH_DAO.xoaKhachHang(maKH);        		
+        	}
+        } else {
+        	JOptionPane.showMessageDialog(null, "Vui lòng chọn khách hàng muốn xóa");
         }
     }
 

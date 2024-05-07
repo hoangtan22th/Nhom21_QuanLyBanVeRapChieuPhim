@@ -8,7 +8,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.AbstractButton;
@@ -19,20 +22,33 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SortOrder;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.toedter.calendar.JDateChooser;
 
+import connectDB.ConnectDB;
+import dao.ChiTietHoaDon_DAO;
+import dao.HoaDon_DAO;
+import dao.KhachHang_DAO;
+import dao.NhanVien_DAO;
+import entity.HoaDon;
+import entity.KhachHang;
+import entity.NhanVien;
 
 public class ThongKeHoaDon extends JPanel implements FocusListener {
 	private JLabel lblTest;
@@ -40,11 +56,10 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 	private JButton btnSearch;
 	private JDateChooser tfFrom;
 	private JDateChooser tfTo;
-	private JButton btnFilterDate;
 	private JButton btnThongKe;
 	private JButton btnRefresh;
 	private DefaultTableModel modelHD;
-	private JTable tableHD;
+	private JTable tableTK;
 
 //	public ThongKe1() {
 //		lblTest = new JLabel("hi");
@@ -53,11 +68,25 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 	private LocalDate now = LocalDate.now();
 	@SuppressWarnings("deprecation")
 	private Date dfNow = new Date(now.getYear() - 1900, now.getMonthValue() - 1, now.getDayOfMonth());
-	@SuppressWarnings("deprecation")
-	private Date dfFrom = new Date(now.getYear() - 1910, now.getMonthValue() - 1, now.getDayOfMonth());
 	private CustomButton btnTongDoanhThu;
-	
+	private NhanVien_DAO nhanVienDAO;
+	private HoaDon_DAO hoaDonDAO;
+	private ChiTietHoaDon_DAO cthdDAO;
+	private KhachHang_DAO khachHangDAO;
+
 	public ThongKeHoaDon() {
+
+		try {
+			ConnectDB.getIntance().connect();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		nhanVienDAO = new NhanVien_DAO();
+		hoaDonDAO = new HoaDon_DAO();
+		cthdDAO = new ChiTietHoaDon_DAO();
+		khachHangDAO = new KhachHang_DAO();
+
 		setLayout(new BorderLayout());
 		setBackground(Color.WHITE);
 //        add(new JLabel("Giao diện quản lý phim"), BorderLayout.CENTER);
@@ -93,7 +122,6 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		btnSearch.setFont(new Font("Helvetica", Font.BOLD, 14));
 		btnSearch.setBorder(new LineBorder(new Color(00, 153, 255), 2, true));
 		btnSearch.setBackground(new Color(00, 153, 255));
-		
 
 		bSearch1.add(lblSearchName);
 		bSearch1.add(Box.createHorizontalStrut(10));
@@ -115,7 +143,7 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		tfFrom.setFont(new Font("SansSerif", Font.PLAIN, 15));
 		tfFrom.setDateFormatString("dd/MM/yyyy");
 		tfFrom.setBorder(new LineBorder(new Color(00, 153, 255), 1, true));
-		tfFrom.setDate(dfFrom);
+		tfFrom.setDate(dfNow);
 		JLabel lblTo = new JLabel("Đến ngày: ");
 		lblTo.setFont(new Font("Helvetica", Font.BOLD, 14));
 		tfTo = new JDateChooser();
@@ -127,13 +155,6 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		tfTo.setDateFormatString("dd/MM/yyyy");
 		tfTo.setBorder(new LineBorder(new Color(00, 153, 255), 1, true));
 		tfTo.setDate(dfNow);
-		btnFilterDate = new CustomButton(new ImageIcon("img//icons8-filter-32.png"));
-		btnFilterDate.setFocusPainted(false);
-		btnFilterDate.setPreferredSize(new Dimension(50, 33));
-		btnFilterDate.setForeground(Color.WHITE);
-		btnFilterDate.setFont(new Font("Helvetica", Font.BOLD, 16));
-		btnFilterDate.setBorder(new LineBorder(new Color(00, 153, 255), 2, true));
-		btnFilterDate.setBackground(new Color(00, 153, 255, 200));
 
 		bSearch2.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.white), "Lọc theo ngày",
 				TitledBorder.LEFT, TitledBorder.TOP, new Font("Helvetica", Font.PLAIN, 14), Color.gray));
@@ -145,8 +166,6 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		bSearch2.add(lblTo);
 		bSearch2.add(Box.createHorizontalStrut(10));
 		bSearch2.add(tfTo);
-		bSearch2.add(Box.createHorizontalStrut(25));
-		bSearch2.add(btnFilterDate);
 
 		bFilter.add(bSearch1);
 		bFilter.add(Box.createVerticalStrut(10));
@@ -161,7 +180,7 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		btnThongKe.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		btnThongKe.setFont(new Font("SansSerif", Font.BOLD, 15));
 		btnThongKe.setBackground(new Color(57, 210, 247));
-		
+
 		// nút reset
 		btnRefresh = new CustomButton("Làm mới");
 		btnRefresh.setFocusPainted(false);
@@ -181,9 +200,9 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		bTopLeftContent.add(Box.createVerticalStrut(15));
 		bTopLeftContent.add(pnTools);
 		bTopLeftContent.add(Box.createVerticalStrut(10));
-		
+
 //		bTopLeftContent.setBorder(BorderFactory.createLineBorder(Color.blue));
-		
+
 		JPanel bTopRightContent = new JPanel(new BorderLayout());
 		bTopRightContent.setBackground(Color.white);
 //		bTopRightContent.setBorder(BorderFactory.createLineBorder(Color.blue));
@@ -192,22 +211,22 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		lblDollar.setFont(new Font("SansSerif", Font.BOLD, 60));
 		lblDollar.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDollar.setForeground(Color.ORANGE);
-		
+
 		btnTongDoanhThu = new CustomButton("55.000.000.000 VND");
 		btnTongDoanhThu.setFocusPainted(false);
 		btnTongDoanhThu.setFont(new Font("SansSerif", Font.BOLD, 20));
 		btnTongDoanhThu.setForeground(Color.BLACK);
 		btnTongDoanhThu.setBackground(Color.WHITE);
-		
-		JLabel lblTDT= new JLabel("Tổng doanh thu");
+
+		JLabel lblTDT = new JLabel("Tổng doanh thu");
 		lblTDT.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTDT.setFont(new Font("SansSerif", Font.ITALIC, 15));
 		lblTDT.setForeground(new Color(00, 153, 255));
-		
+
 		bTopRightContent.add(lblDollar, BorderLayout.NORTH);
 		bTopRightContent.add(btnTongDoanhThu, BorderLayout.CENTER);
 		bTopRightContent.add(lblTDT, BorderLayout.SOUTH);
-		
+
 		pnTop.add(bTitle, BorderLayout.NORTH);
 		pnTop.add(bTopLeftContent, BorderLayout.CENTER);
 		pnTop.add(bTopRightContent, BorderLayout.EAST);
@@ -216,27 +235,27 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 
 		// Table
 		JPanel pnBottom = new JPanel(new BorderLayout());
-		String header[] = { "STT", "Mã hóa đơn", "Mã nhân viên", "Tên nhân viên", "Mã khách hàng",
-				"Tên khách hàng", "Ngày lập", "Tổng thu"};
+		String header[] = { "STT", "Mã hóa đơn", "Mã nhân viên", "Tên nhân viên", "Mã khách hàng", "Tên khách hàng",
+				"Ngày lập", "Tổng thu" };
 		modelHD = new DefaultTableModel(header, 0);
-		tableHD = new JTable(modelHD);
-		tableHD.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		tableHD.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		tableHD.setShowHorizontalLines(true);
-		tableHD.setShowGrid(true);
-		tableHD.setBackground(Color.WHITE);
-		tableHD.setFont(new Font("Helvetica", Font.PLAIN, 14));
-		tableHD.setSelectionBackground(new Color(00, 153, 255, 30));
-		tableHD.setSelectionForeground(new Color(00, 153, 255));
-		tableHD.setRowHeight(30);
+		tableTK = new JTable(modelHD);
+		tableTK.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		tableTK.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		tableTK.setShowHorizontalLines(true);
+		tableTK.setShowGrid(true);
+		tableTK.setBackground(Color.WHITE);
+		tableTK.setFont(new Font("Helvetica", Font.PLAIN, 14));
+		tableTK.setSelectionBackground(new Color(00, 153, 255, 30));
+		tableTK.setSelectionForeground(new Color(00, 153, 255));
+		tableTK.setRowHeight(30);
 
-		JTableHeader tableHeader = tableHD.getTableHeader();
+		JTableHeader tableHeader = tableTK.getTableHeader();
 		tableHeader.setBackground(new Color(00, 153, 255));
 		tableHeader.setForeground(Color.white);
 		tableHeader.setFont(new Font("Helvetica", Font.BOLD, 14));
 
 		// thanh cuốn lên xuống
-		JScrollPane scrollHD = new JScrollPane(tableHD, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane scrollHD = new JScrollPane(tableTK, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scrollHD.setBorder(new LineBorder(new Color(00, 153, 255), 1, true));
 		scrollHD.setBackground(new Color(00, 153, 255));
@@ -245,10 +264,12 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		pnBottom.add(scrollHD);
 		pnWrap.add(pnBottom, BorderLayout.CENTER);
 		add(pnWrap, BorderLayout.CENTER);
-		
+
 		tfSearch.addFocusListener(this);
+
+		loadDataTable();
 	}
-	
+
 	/**
 	 * placeholder tìm kiếm
 	 */
@@ -270,6 +291,42 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		}
 	}
 
+	private void loadDataTable() {
+		java.util.Date utilNgayBatDau = tfFrom.getDate();
+		java.util.Date utilNgayKetThuc = tfTo.getDate();
+
+		java.sql.Date ngayBatDau = new java.sql.Date(utilNgayBatDau.getTime());
+		java.sql.Date ngayKetThuc = new java.sql.Date(utilNgayKetThuc.getTime());
+
+		if (ngayBatDau.before(ngayKetThuc) || ngayBatDau.equals(ngayKetThuc)) {
+			ArrayList<HoaDon> lstHD = hoaDonDAO.getAllHoaDon();
+
+			DefaultTableModel model = (DefaultTableModel) tableTK.getModel();
+			model.setRowCount(0);
+
+			int stt = 1;
+			double tongDoanhThu = 0;
+			for (HoaDon hd : lstHD) {
+				String tenNV = nhanVienDAO.getTenNVTheoMa(hd.getNhanVien().getMaNhanVien());
+				String tenKH = khachHangDAO.getTenKHTheoMa(hd.getKhachHang().getMaKhachHang());
+				double tongThu = cthdDAO.getTongThu(hd.getMaHoaDon(), ngayBatDau, ngayKetThuc);
+				tongDoanhThu += tongThu;
+				model.addRow(new Object[] { stt++, hd.getMaHoaDon(), hd.getNhanVien().getMaNhanVien(), tenNV,
+						hd.getKhachHang().getMaKhachHang(), tenKH, hd.getNgayLapHoaDon(), tongThu});
+			}
+			DecimalFormat decimalFormat = new DecimalFormat("###,###");
+	        String formattedTongDoanhThu = decimalFormat.format(tongDoanhThu);
+	        btnTongDoanhThu.setText(formattedTongDoanhThu + " VND");
+//	     // Sắp xếp dữ liệu theo cột "Doanh thu" giảm dần
+//	        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+//	        tableTK.setRowSorter(sorter);
+//	        ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
+//	        int columnIndexToSort = 5; // Index của cột "Doanh thu" (đếm từ 0)
+//	        sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING)); // Sắp xếp giảm dần
+//	        sorter.setSortKeys(sortKeys);
+		} else
+			JOptionPane.showMessageDialog(this, "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc!");
+	}
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Thống kê nhân viên");
