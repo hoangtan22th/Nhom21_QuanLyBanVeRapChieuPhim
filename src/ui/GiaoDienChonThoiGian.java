@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 	public static String soPhong;
@@ -63,7 +64,7 @@ public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 	JButton btnChonSuat[];
 
 	private static Set<String> ngChieuSet;
-//	private Set<String> tenPhongSet;
+	private static Set<String> tenPhongSet;
 //	private Set<String> giChieuSet;
 	private static JPanel pnPhong;
 	private static JPanel pnNgay;
@@ -181,7 +182,8 @@ public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 		phimDAO = new Phim_DAO();
 		phongDAO = new Phong_DAO();
 		ctpDAO = new ChiTietPhim_DAO();
-		ngChieuSet = new HashSet<>();
+		ngChieuSet = new TreeSet<>();
+//		tenPhongSet = new TreeSet<>();
 
 		pnNgay.removeAll();
 		pnPhong.removeAll();
@@ -229,9 +231,14 @@ public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 							try {
 								Date ngay = sdfInput.parse(ngayText);
 
-								ArrayList<Phong> dsPhong = ctpDAO.getPhongByNgayChieuVaMaPhim(ngay,
-										gdChonPhim.getMaPhim());
-								if (dsPhong.isEmpty()) {
+								ArrayList<Phong> dsPhong = ctpDAO.getPhongByNgayChieuVaMaPhim(ngay,gdChonPhim.getMaPhim());
+								tenPhongSet = new TreeSet<>();
+								for (Phong phong : dsPhong) {
+									tenPhongSet.add(phong.getTenPhong());
+								}
+								
+								
+								if (tenPhongSet.isEmpty()) {
 									pnPhong.removeAll();
 									pnPhong.revalidate();
 									pnPhong.repaint();
@@ -241,8 +248,8 @@ public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 								} else {
 									pnPhong.removeAll();
 									pnSuatChieu.removeAll();
-									for (Phong phong : dsPhong) {
-										JButton btnPhong = new JButton(phong.getTenPhong());
+									for (String tenPhong : tenPhongSet) {
+										JButton btnPhong = new JButton(tenPhong);
 										btnPhong.setPreferredSize(new Dimension(120, 50));
 										btnPhong.setBackground(Color.ORANGE);
 										btnPhong.addActionListener(this);
@@ -295,8 +302,8 @@ public class GiaoDienChonThoiGian extends JPanel implements ActionListener {
 										btnSuatChieu.addActionListener(this);
 										pnSuatChieu.add(btnSuatChieu);
 									}
-									pnPhong.revalidate();
-									pnPhong.repaint();
+									pnSuatChieu.revalidate();
+									pnSuatChieu.repaint();
 								}
 
 							} catch (ParseException ex) {
