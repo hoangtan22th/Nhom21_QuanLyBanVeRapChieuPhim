@@ -65,6 +65,7 @@ public class ChucNangDatVe extends JPanel implements ActionListener {
         if (e.getSource() == nextButton) {
         	int i = getCurrentIndex();
         	System.out.println(i);
+        	
             if (i != 3) {
             	if(giaoDienChonPhim.tenPhimVar!= null  && giaoDienChonPhim.maPhimVar!= null && giaoDienChonPhim.posterPathVar !=null ) {           	      
             		String tenPhim = giaoDienChonPhim.tenPhimVar;    
