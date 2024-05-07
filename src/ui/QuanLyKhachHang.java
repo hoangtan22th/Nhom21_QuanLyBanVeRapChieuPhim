@@ -248,7 +248,7 @@ public class QuanLyKhachHang extends JPanel {
                         ckcTTV.setSelected(tableModel.getValueAt(selectedRow, 4).toString().equals("Có"));
                         maTTV = tableModel.getValueAt(selectedRow, 5).toString();
                         loaiTTV = tableModel.getValueAt(selectedRow, 6).toString();
-                        diemTL = Double.parseDouble(tableModel.getValueAt(selectedRow, 7).toString());
+                        diemTL = tableModel.getValueAt(selectedRow, 7).toString().equals("") ? 0 : Double.parseDouble(tableModel.getValueAt(selectedRow, 7).toString());
                         ngayDk = (tableModel.getValueAt(selectedRow, 8).toString());
                     }
                 }
@@ -369,7 +369,7 @@ public class QuanLyKhachHang extends JPanel {
             tableModel.setValueAt(soDienThoai, selectedRow, 3);
             tableModel.setValueAt(maTTV, selectedRow, 5);
             tableModel.setValueAt(loaiTTV, selectedRow, 6);
-            tableModel.setValueAt(diemTL, selectedRow, 7);
+            tableModel.setValueAt(diemTL == 0 ? "" : diemTL, selectedRow, 7);
             tableModel.setValueAt(ngayDk, selectedRow, 8);
 
             // Xóa nội dung trong các ô TextField sau khi sửa
@@ -394,8 +394,10 @@ public class QuanLyKhachHang extends JPanel {
     // Phương thức xóa khách hàng khỏi bảng
     private void xoaKhachHang() {
         int selectedRow = table.getSelectedRow();
+        String maKH = txtMa.getText().trim();
         if (selectedRow != -1) {
             tableModel.removeRow(selectedRow);
+            KH_DAO.xoaKhachHang(maKH);
         }
     }
 
