@@ -91,7 +91,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
 		pnWrap.setBackground(Color.WHITE);
 		pnWrap.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		JPanel pnTop = new JPanel();
+		JPanel pnTop = new JPanel(new BorderLayout());
 //			pnTop.setBorder(BorderFactory.createLineBorder(new Color(00, 153, 255)));
 
 		Box bTopContent = Box.createVerticalBox();
@@ -278,7 +278,10 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
 		bTopContent.add(pnTools);
 		bTopContent.add(Box.createVerticalStrut(10));
 
-		pnTop.add(bTopContent);
+		pnTop.add(Box.createHorizontalStrut(120), BorderLayout.WEST);
+		pnTop.add(bTopContent, BorderLayout.CENTER);
+		pnTop.add(Box.createHorizontalStrut(120), BorderLayout.EAST);
+		
 		pnTop.setBackground(Color.WHITE);
 		pnWrap.add(pnTop, BorderLayout.NORTH);
 

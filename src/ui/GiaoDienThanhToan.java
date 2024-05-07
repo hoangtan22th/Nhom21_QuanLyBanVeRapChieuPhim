@@ -388,10 +388,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
             lblHoTen.setVisible(false);
             txtHoTen.setVisible(false);
             lblTuoi.setVisible(false);
-            txtTuoi.setVisible(false);
-			
-			
-			
+            txtTuoi.setVisible(false);	
 		}
 		else if(o.equals(radioButtonLamThe)) {
 			// Xử lý sự kiện khi radio button Làm thẻ thành viên được chọn
@@ -418,7 +415,6 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
             lblTuoi.setVisible(true);
             txtTuoi.setVisible(true);
 		}
-		
 		else if (o.equals(btnThanhtoan)) 
 		{
 		    if (radioButtonDaCoThe.isSelected()) 
@@ -437,9 +433,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 		        } 
 		        else {
 		            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với số điện thoại này.");
-		        }
-		        
-		     
+		        }		     
 		    }
 		    if (radioButtonLamThe.isSelected()) {
 		        if (txtSDT != null && txtHoTen != null && txtTuoi != null) {
@@ -488,22 +482,8 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 			            
 				           
 		            }
-		            
-		             
-		            
-		       
-		        
 		    }
-
-
-		    GiaoDienThanhToan2.capNhatThongTinTrangThanhToan();
+			GiaoDienThanhToan2.capNhatThongTinTrangThanhToan();
 		    }
-		
-		
 		}
-
 }
-
-
-
-

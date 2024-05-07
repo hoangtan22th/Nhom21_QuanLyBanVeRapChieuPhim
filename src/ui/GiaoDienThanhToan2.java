@@ -442,8 +442,7 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 			txtSdt.setText(hoaDon.getKhachHang().getSoDienThoai());
 
 			theThanhVienDAO = new TheThanhVien_DAO();
-			TheThanhVien theThanhVien = theThanhVienDAO
-					.layTheThanhVienTheoMaKhachHang(hoaDon.getKhachHang().getMaKhachHang());
+			TheThanhVien theThanhVien = theThanhVienDAO.layTheThanhVienTheoMaKhachHang(hoaDon.getKhachHang().getMaKhachHang());
 			if (theThanhVien != null) {
 				txtDiem.setText(String.valueOf(theThanhVien.getDiemTichLuy()));
 			}

@@ -84,27 +84,28 @@ public class TheThanhVien_DAO {
 
 	// Phương thức sinh mã thẻ thành viên mới
 	private String generateMaTTV() {
-	    String newMaTTV = "TTV001"; // Mã thẻ thành viên mặc định nếu không có thẻ nào trong cơ sở dữ liệu
-	    try {
-	        ConnectDB.getIntance();
-	        Connection con = ConnectDB.getConnection();
-	        
-	        // Tạo câu lệnh SQL để lấy mã thẻ thành viên lớn nhất trong cơ sở dữ liệu
-	        String sqlSelectMaxMaTTV = "SELECT MAX(maTTV) FROM TheThanhVien";
-	        PreparedStatement psSelectMaxMaTTV = con.prepareStatement(sqlSelectMaxMaTTV);
-	        ResultSet rsMaxMaTTV = psSelectMaxMaTTV.executeQuery();
-	        
-	        if (rsMaxMaTTV.next()) {
-	            String maxMaTTV = rsMaxMaTTV.getString(1);
-	            // Tách số từ mã thẻ thành viên hiện tại và tăng giá trị lên 1
-	            int number = Integer.parseInt(maxMaTTV.trim().substring(3)) + 1;
-	            // Format lại chuỗi số với độ dài 3 ký tự và thêm vào "TTV"
-	            newMaTTV = String.format("TTV%03d", number);
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return newMaTTV;
+		String id = "";
+        try{
+        	ConnectDB.getIntance();
+			Connection con = ConnectDB.getConnection();
+            String sql = "select max(maTTV) from TheThanhVien";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            rs.next();
+            String maxMaTTV = rs.getString(1);
+            if(maxMaTTV == null){
+                return "TTV001";
+            }
+            else{
+            	maxMaTTV = maxMaTTV.trim();
+                int num = Integer.parseInt(maxMaTTV.substring(2)) + 1;
+                id = String.format("TTV%03d", num);
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+        return id;
 	}
 
 
@@ -153,23 +154,24 @@ public class TheThanhVien_DAO {
             System.out.println("Thêm thẻ thành viên thành công.");
         } catch (SQLException e) {
             System.out.println("Lỗi khi thêm thẻ thành viên: " + e.getMessage());
-        } finally { 
-         
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+//        } finally { 
+//         
+//            if (pstmt != null) {
+//                try {
+//                    pstmt.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (con != null) {
+//                try {
+//                    con.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 	 public TheThanhVien layTheThanhVienTheoMaKhachHang(String maKhachHang) {
 	        TheThanhVien theThanhVien = null;
@@ -190,7 +192,7 @@ public class TheThanhVien_DAO {
 	                KhachHang khachHang = new KhachHang(maKhachHang);
 	                theThanhVien = new TheThanhVien(maTheThanhVien, loai, ngayDangKy, diemTichLuy, khachHang);
 	            }
-	            con.close();
+//	            con.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
