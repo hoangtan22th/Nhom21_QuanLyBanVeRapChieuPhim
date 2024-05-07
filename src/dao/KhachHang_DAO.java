@@ -192,8 +192,25 @@ public class KhachHang_DAO {
 	    }
 	    return newMaKhachHang;
 	}
-	
-
+	 
+	public boolean xoaKhachHang(String maKH) {
+		try {
+			ConnectDB.getIntance();
+			Connection con = ConnectDB.getConnection();
+			String sql = "delete from HoaDon where maKhachHang = ? delete from KhachHang where maKhachHang = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setString(1, maKH);
+			stmt.setString(2, maKH);
+			int ok = stmt.executeUpdate();
+			stmt.close();
+			if(ok > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 
 	
