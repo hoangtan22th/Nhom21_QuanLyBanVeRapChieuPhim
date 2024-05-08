@@ -1,6 +1,9 @@
 package ui;
 
 import javax.swing.*;
+
+import dao.Ve_DAO;
+
 import java.awt.*;
 
 public class GiaoDienVe extends JFrame{
@@ -54,7 +57,7 @@ public class GiaoDienVe extends JFrame{
 	public GiaoDienVe() {
 		setSize(450, 600);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
 		
 		ImageIcon imgQLThongKe = new ImageIcon("img/movi-icon.png");
 		Image scaledQLThongKe = scaleImage(imgQLThongKe.getImage(), 80, 80);
@@ -86,17 +89,17 @@ public class GiaoDienVe extends JFrame{
         pnTenPhim.setBackground(Color.WHITE);
         pnTenPhim.add(lblTenPhim); pnTenPhim.add(txtTenPhim);
         
-        
-        lblTheLoai = new JLabel("Thể loại:");
-        lblTheLoai.setFont(new Font("Arial", Font.BOLD, 14));
-        lblTheLoai.setPreferredSize(new Dimension(140, 30));
-        txtTenTheLoai = new JTextField("Kinh dị");
-        txtTenTheLoai.setFont(new Font("Arial", Font.BOLD, 15));
-        txtTenTheLoai.setPreferredSize(new Dimension(140, 30));
-        txtTenTheLoai.setHorizontalAlignment(SwingConstants.CENTER);
-        pnTenTheLoai = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,5));
-        pnTenTheLoai.setBackground(Color.WHITE);
-        pnTenTheLoai.add(lblTheLoai); pnTenTheLoai.add(txtTenTheLoai);
+//        
+//        lblTheLoai = new JLabel("Thể loại:");
+//        lblTheLoai.setFont(new Font("Arial", Font.BOLD, 14));
+//        lblTheLoai.setPreferredSize(new Dimension(140, 30));
+//        txtTenTheLoai = new JTextField("Kinh dị");
+//        txtTenTheLoai.setFont(new Font("Arial", Font.BOLD, 15));
+//        txtTenTheLoai.setPreferredSize(new Dimension(140, 30));
+//        txtTenTheLoai.setHorizontalAlignment(SwingConstants.CENTER);
+//        pnTenTheLoai = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,5));
+//        pnTenTheLoai.setBackground(Color.WHITE);
+//        pnTenTheLoai.add(lblTheLoai); pnTenTheLoai.add(txtTenTheLoai);
         
         lblThoiLuong = new JLabel("Thời lượng:");
         lblThoiLuong.setFont(new Font("Arial", Font.BOLD, 14));
@@ -154,7 +157,7 @@ public class GiaoDienVe extends JFrame{
         pnTenGhe.add(lblGhe); pnTenGhe.add(txtTenGhe);
         
         txtTenPhim.setBorder(null); txtTenPhim.setOpaque(false);txtTenPhim.setEditable(false);txtTenPhim.setFocusable(false);
-        txtTenTheLoai.setBorder(null); txtTenTheLoai.setOpaque(false);txtTenTheLoai.setEditable(false);txtTenTheLoai.setFocusable(false);
+//        txtTenTheLoai.setBorder(null); txtTenTheLoai.setOpaque(false);txtTenTheLoai.setEditable(false);txtTenTheLoai.setFocusable(false);
         txtTenThoiLuong.setBorder(null); txtTenThoiLuong.setOpaque(false);txtTenThoiLuong.setEditable(false);txtTenThoiLuong.setFocusable(false);
         txtNgayKhoiChieu.setBorder(null); txtNgayKhoiChieu.setOpaque(false);txtNgayKhoiChieu.setEditable(false);txtNgayKhoiChieu.setFocusable(false);
         txtGioChieu.setBorder(null); txtGioChieu.setOpaque(false);txtGioChieu.setEditable(false);txtGioChieu.setFocusable(false);
@@ -223,7 +226,7 @@ public class GiaoDienVe extends JFrame{
         
         Box b = Box.createVerticalBox();
         b.add(pnTenPhim);
-        b.add(pnTenTheLoai);
+//        b.add(pnTenTheLoai);
         b.add(pnTenThoiLuong);
         b.add(pnNgayKhoiChieu);
         b.add(pnGioChieu);
@@ -259,6 +262,18 @@ public class GiaoDienVe extends JFrame{
 
 	// Phương thức để thiết lập giá trị cho các trường thông tin
     public void setThongTinVe() {
+    	Ve_DAO veDAO = new Ve_DAO();
+        txtMaVe.setText(veDAO.layMaVeCuoiCung());
+        txtTenPhim.setText(GiaoDienChonPhim.tenPhimVar);
+        txtTenThoiLuong.setText(String.valueOf(GiaoDienChonPhim.thoiLuongVar)+" Phút");
+        txtNgayKhoiChieu.setText(GiaoDienChonThoiGian.thoiGian);
+        txtGioChieu.setText(GiaoDienChonThoiGian.suatChieu);
+        txtPhongChieu.setText(GiaoDienChonThoiGian.soPhong);
+        txtTenGhe.setText(GiaoDienChonGhe.soGhe);
+        txtTiensanpham.setText(String.valueOf(GiaoDienThanhToan2.total));
+        txtTongThanhToan.setText(String.valueOf(GiaoDienThanhToan2.tongGiaTien));
+        
+        
         
     }
 

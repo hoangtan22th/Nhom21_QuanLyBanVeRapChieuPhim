@@ -308,6 +308,23 @@ public class HoaDon_DAO {
         }
         return maKhachHang;
     }
+    public String getLastMaHoaDon() {
+        String lastMaHoaDon = "";
+        try {
+            Connection connection = ConnectDB.getConnection();
+            Statement statement = connection.createStatement();
+            String sqlQuery = "SELECT TOP 1 maHoaDon FROM HoaDon ORDER BY maHoaDon DESC";
+            ResultSet resultSet = statement.executeQuery(sqlQuery);
+            if (resultSet.next()) {
+                lastMaHoaDon = resultSet.getString("maHoaDon");
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lastMaHoaDon;
+    }
 }
 
 

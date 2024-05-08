@@ -25,8 +25,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
+import dao.ChiTietHoaDon_DAO;
 import dao.HoaDon_DAO;
 import dao.TheThanhVien_DAO;
+import dao.Ve_DAO;
 import entity.HoaDon;
 import entity.TheThanhVien;
 
@@ -92,17 +94,18 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 	private JButton btnInVe;
 	private static JTable table;
 	private static Container boxMain;
-	private int total;
+	public static int total;
 	private JButton btnCapNhat;
 	private String txtDiemCanSuDung;
 	private int diemCanSuDung;
 	private double doiDiemThanhTien;
-	private double tongGiaTien;
-	private double thueGTGT;
+	public static double tongGiaTien;
+	public static double thueGTGT;
 	private double soDiemConLai;
 	private TheThanhVien_DAO ttvDAO;
 	private HoaDon_DAO hoaDonDAO2;
-
+	public static Object[][] data;
+	
 	public GiaoDienThanhToan2() {
 		setLayout(new BorderLayout());
 //		setSize(1200, 725);
@@ -285,12 +288,16 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 //        bảng
 
 		String[] columnNames = { "TT", "Tên sản phẩm", "Đơn giá", "Số lượng", "Thành tiền" };
-		Object[][] data = { { 1, "Phim Quật mộ trùng ma", 80000, 1, 80000 },
-				{ 2, "Bắp + Pepsi vị chanh vừa", 87000, 1, 87000 }, { 3, "Bắp + Pepsi vị chanh nhỏ", 80000, 0, 0 },
-				{ 4, "Bắp + Pepsi vị chanh lớn", 95000, 0, 0 }, { 5, "Bắp rang bơ vị phô mai vừa", 87000, 0, 0 },
-				{ 6, "Combo 2 nước một bắp", 113000, 0, 0 }, { 7, "2 nước siêu lớn +1 bắp lớn", 95000, 0, 0 },
-				{ 8, "Combo 1 bắp lớn + 1 nước siêu lớn", 95000, 0, 0 }, };
-
+		 data = new Object[][] {
+		        { 1, "Phim Quật mộ trùng ma", 80000, 1, 80000 },
+		        { 2, "Bắp + Pepsi vị chanh vừa", 87000, 1, 87000 },
+		        { 3, "Bắp + Pepsi vị chanh nhỏ", 80000, 0, 0 },
+		        { 4, "Bắp + Pepsi vị chanh lớn", 95000, 0, 0 },
+		        { 5, "Bắp rang bơ vị phô mai vừa", 87000, 0, 0 },
+		        { 6, "Combo 2 nước một bắp", 113000, 0, 0 },
+		        { 7, "2 nước siêu lớn +1 bắp lớn", 95000, 0, 0 },
+		        { 8, "Combo 1 bắp lớn + 1 nước siêu lớn", 95000, 0, 0 }
+		    };
 		// BẢNG
 		table = new JTable(data, columnNames);
 		table.setPreferredScrollableViewportSize(new Dimension(600, 250));
@@ -415,7 +422,7 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 		txtTiensanpham.addMouseListener(this);
 		btnApdung.addActionListener(this);
 		btnInVe.addActionListener(this);
-
+		btnLuuHoaDon.addActionListener(this);
 	}
 
 	public static void main(String[] args) {
@@ -446,6 +453,9 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 			if (theThanhVien != null) {
 				txtDiem.setText(String.valueOf(theThanhVien.getDiemTichLuy()));
 			}
+			else {
+				txtDiem.setText("0");
+			}
 
 		} else {
 
@@ -456,11 +466,28 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		if (o.equals(btnInHoaDon)) {
+			
 			GiaoDienHoaDon giaoDienHoaDon = new GiaoDienHoaDon();
+			giaoDienHoaDon.setGiaoDienHoaDon();
 			giaoDienHoaDon.setVisible(true);
 
-		} else if (o.equals(btnInVe)) {
+		} else if(o.equals(btnLuuHoaDon)) {
+			Ve_DAO veDao = new Ve_DAO();
+			
+			
+			veDao.taoVe("NULL", Double.parseDouble(txtTongThanhToan.getText()), GiaoDienChonPhim.maPhimVar, "GH001");
+			JOptionPane.showMessageDialog(this, Double.parseDouble(txtTongThanhToan.getText())+GiaoDienChonPhim.maPhimVar);
+			
+			ChiTietHoaDon_DAO ctHoaDonDAO = new ChiTietHoaDon_DAO();
+			 Object[] firstRowData = data[0]; // Lấy dữ liệu từ hàng đầu tiên
+			    int soLuongPhim = (int) firstRowData[3];
+			   
+			    ctHoaDonDAO.insertChiTietHoaDon(soLuongPhim, hoaDonDAO.getLastMaHoaDon() , veDao.layMaVeCuoiCung(), Double.parseDouble(txtTongThanhToan.getText()));
+		}
+		else if (o.equals(btnInVe)) {
+			
 			GiaoDienVe gdve = new GiaoDienVe();
+			gdve.setThongTinVe();
 			gdve.setVisible(true);
 		} else if (o.equals(btnCapNhat)) {
 			updateUI();
@@ -474,6 +501,7 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 				JOptionPane.showMessageDialog(this, "Vui lòng nhập số điểm hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			
 
 			double diemHienCo = Double.parseDouble(txtDiem.getText());
 			if (diemHienCo > diemCanSuDung) {
@@ -489,10 +517,12 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 
 				ttvDAO = new TheThanhVien_DAO();
 				ttvDAO.capNhatDiemTichLuy(hoaDonDAO.layMaKhachHangTuHoaDonCuoiCung(), soDiemConLai);
+				JOptionPane.showMessageDialog(this, "Bạn đã cập nhật điểm thành công");
 
 			} else {
 				JOptionPane.showMessageDialog(this, "Bạn không đủ điểm", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 			}
+			
 		}
 
 	}
@@ -509,7 +539,7 @@ public class GiaoDienThanhToan2 extends JPanel implements ActionListener, MouseL
 					if (quantity >= 0) {
 						int selectedRow = table.getSelectedRow();
 						if (selectedRow != -1) {
-							// Cập nhật giá trị số lượng và tổng tiền cho hàng tương ứng trong bảng
+							// nhật giá trị số lượng và tổng tiền cho hàng tương ứng trong bảng
 							double price = Double.parseDouble(table.getValueAt(selectedRow, 2).toString());
 							table.setValueAt(quantity, selectedRow, 3);
 							table.setValueAt(quantity * price, selectedRow, 4);

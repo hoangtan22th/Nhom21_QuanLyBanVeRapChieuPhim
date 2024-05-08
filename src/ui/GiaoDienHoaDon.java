@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +20,11 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import dao.HoaDon_DAO;
+import dao.KhachHang_DAO;
+import dao.TheThanhVien_DAO;
+import entity.TheThanhVien;
+
 public class GiaoDienHoaDon extends JFrame{
 	private JLabel lblTitle;
 	private JLabel lblDiachi;
@@ -25,27 +32,27 @@ public class GiaoDienHoaDon extends JFrame{
 	private JLabel lblMaHD;
 	private JLabel lblThuNgan;
 	private JLabel lblKH;
-	private JTextField txtMaHD;
-	private JTextField txtKH;
+	public static JTextField txtMaHD;
+	public static JTextField txtKH;
 	private JPanel pnTitle;
 	private JPanel pnTitle2;
-	private JPanel pnMain;
+	private static JPanel pnMain;
 	private JPanel pnDiaChi;
 	private JPanel pnMaHD;
 	private JLabel lblNgayLap;
-	private JTextField txtNgayLap;
+	public static JTextField txtNgayLap;
 	private JPanel pnNgayLap;
 	private JPanel pnThuNgan;
 	private JPanel pnKH;
-	private JTextField txtThuNgan;
+	public static JTextField txtThuNgan;
 	private JLabel lblThueGTGT;
 	private JLabel lblTiensanpham;
 	private JLabel lblTongThanhToan;
 	private JLabel lblDiemDoi;
-	private JTextField txtTiensanpham;
-	private JTextField txtThueGTGT;
-	private JTextField txtDiemDoi;
-	private JTextField txtTongThanhToan;
+	public static JTextField txtTiensanpham;
+	public static JTextField txtThueGTGT;
+	public static JTextField txtDiemDoi;
+	public static JTextField txtTongThanhToan;
 	private JPanel pnTiensanpham;
 	private JPanel pnThueGTGT;
 	private JPanel pnDiemDoi;
@@ -102,13 +109,13 @@ public class GiaoDienHoaDon extends JFrame{
 		
 //		 bảng
         String[] columnNames = {"Sản phẩm","Đơn giá", "SL", "Thành tiền"};
-        Object[][] data = {
+        Object[][] data1 = {
                 { "Phim Quật mộ trùng ma", 80000 , 1 , 80000},
                 {"Bắp + Pepsi vị chanh vừa", 80000,1, 80000}
         	};
         
       //BẢNG
-        JTable table = new JTable(data, columnNames);
+        JTable table = new JTable(data1, columnNames);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.setPreferredScrollableViewportSize(new Dimension(430, 150));
         table.setGridColor(Color.WHITE); // Set màu của đường biên
@@ -206,7 +213,94 @@ public class GiaoDienHoaDon extends JFrame{
 		add(pnMain, BorderLayout.NORTH);
 //		add(scrollPane, BorderLayout.CENTER);
 	}
-	
+	public static void setGiaoDienHoaDon() {
+		HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
+		
+		txtMaHD.setText(hoaDonDAO.getLastMaHoaDon());
+		txtNgayLap.setText(String.valueOf(hoaDonDAO.layHoaDonCuoiCung().getNgayLapHoaDon()));
+		txtThuNgan.setText(DangNhap.tenNhanVien);
+		KhachHang_DAO khachHangDAO = new KhachHang_DAO();
+		TheThanhVien_DAO theThanhVienDAO = new TheThanhVien_DAO();
+		txtKH.setText(hoaDonDAO.layHoaDonCuoiCungCoTen().getKhachHang().getTenKhachHang());
+//		txtDiemDoi.setText(String.valueOf(theThanhVienDAO.layTheThanhVienTheoMaKhachHang(hoaDonDAO.layHoaDonCuoiCungCoTen().getKhachHang().getMaKhachHang()).getDiemTichLuy()));
+		TheThanhVien theThanhVien = theThanhVienDAO.layTheThanhVienTheoMaKhachHang(hoaDonDAO.layHoaDonCuoiCungCoTen().getKhachHang().getMaKhachHang());
+		if (theThanhVien != null) {
+		    txtDiemDoi.setText(String.valueOf(theThanhVien.getDiemTichLuy()));
+		} else {
+			txtDiemDoi.setText("0");
+		}
+
+		txtTiensanpham.setText(String.valueOf(GiaoDienThanhToan2.total));
+		txtThueGTGT.setText(String.valueOf(GiaoDienThanhToan2.thueGTGT));
+		txtTongThanhToan.setText(String.valueOf(GiaoDienThanhToan2.tongGiaTien));
+		
+		// Danh sách tên các cột cho bảng dữ liệu 1
+		String[] columnNames1 = {"STT","Sản phẩm", "Đơn giá", "SL", "Thành tiền"};
+
+		// Bảng dữ liệu 1 để lưu các dòng có số lượng là 1
+		Object[][] data1 = new Object[0][columnNames1.length];
+
+		// Duyệt qua các hàng của bảng dữ liệu gốc
+		for (Object[] row : GiaoDienThanhToan2.data) {
+		    // Lấy giá trị số lượng từ cột thứ tư (index 3)
+		    int soLuong = (int) row[3];
+
+		    // Kiểm tra nếu số lượng là 1, thêm hàng đó vào bảng dữ liệu 1
+		    if (soLuong >= 1) {
+		        // Tạo một mảng mới để chứa dòng dữ liệu của hàng có số lượng là 1
+		        Object[] newRow = new Object[columnNames1.length];
+		        
+		        // Sao chép dữ liệu từ hàng hiện tại sang hàng mới
+		        for (int i = 0; i < columnNames1.length; i++) {
+		            newRow[i] = row[i];
+		        }
+		        
+		        // Thêm hàng mới vào bảng dữ liệu 1
+		        Object[][] newData1 = new Object[data1.length + 1][columnNames1.length];
+		        System.arraycopy(data1, 0, newData1, 0, data1.length);
+		        newData1[data1.length] = newRow;
+		        
+		        // Cập nhật bảng dữ liệu 1
+		        data1 = newData1;
+		        JTable table = new JTable(data1, columnNames1);
+		        //BẢNG
+		       
+		        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		        table.setPreferredScrollableViewportSize(new Dimension(430, 150));
+		        table.setGridColor(Color.WHITE); // Set màu của đường biên
+		        table.setBorder(BorderFactory.createEmptyBorder()); // Đặt đường biên trống
+		        table.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font chữ
+		        table.setRowHeight(40); // Set chiều cao của mỗi dòng
+		        JScrollPane scrollPane = new JScrollPane(table);
+				
+		        // Thiết lập chiều rộng cho từng cột
+		        table.getColumnModel().getColumn(1).setPreferredWidth(40); // Đơn giá
+		        table.getColumnModel().getColumn(2).setPreferredWidth(10); // Số lượng
+		        table.getColumnModel().getColumn(3).setPreferredWidth(30); // Thành tiền
+
+		        // Set renderer cho các cột
+		        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa dữ liệu
+		        table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); 
+		        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Căn giữa cột
+		        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Căn giữa cột 
+
+		        // Set renderer cho tiêu đề cột
+		        DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+		        table.getTableHeader().setFont(table.getTableHeader().getFont().deriveFont(Font.BOLD)); // In đậm tiêu đề
+//				HẾT BẢNG
+		        
+		   
+		        
+		        pnMain.add(scrollPane, BorderLayout.CENTER);
+		        
+		    }
+		}
+		// Bây giờ bạn có thể sử dụng data1 cho mục đích của mình
+
+
+	}
+
 	public static void main(String[] args) {
 		new GiaoDienHoaDon().setVisible(true);
 	}
