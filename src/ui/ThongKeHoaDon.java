@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.sql.SQLException;
@@ -50,10 +52,10 @@ import entity.HoaDon;
 import entity.KhachHang;
 import entity.NhanVien;
 
-public class ThongKeHoaDon extends JPanel implements FocusListener {
+public class ThongKeHoaDon extends JPanel implements ActionListener {
 	private JLabel lblTest;
-	private JTextField tfSearch;
-	private JButton btnSearch;
+//	private JTextField tfSearch;
+//	private JButton btnSearch;
 	private JDateChooser tfFrom;
 	private JDateChooser tfTo;
 	private JButton btnThongKe;
@@ -105,29 +107,9 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		bTitle.add(lblTitle);
 
 		Box bFilter = Box.createVerticalBox();
-		Box bSearch1 = Box.createHorizontalBox();
-		JLabel lblSearchName = new JLabel("Tìm kiếm: ");
-		lblSearchName.setFont(new Font("Helvetica", Font.BOLD, 14));
-		tfSearch = new JTextField(40);
-		tfSearch.setPreferredSize(new Dimension(300, 33));
-		tfSearch.setToolTipText("Tìm kiếm hóa đơn theo tên");
-		tfSearch.setText("Tìm kiếm theo mã, tên");
-		tfSearch.setFont(new Font("Helvetica", Font.ITALIC, 15));
-		tfSearch.setForeground(Color.LIGHT_GRAY);
-		tfSearch.setBorder(new LineBorder(new Color(00, 153, 255), 2, true));
-		btnSearch = new CustomButton(new ImageIcon("img//icons8-search-30.png"));
-		btnSearch.setFocusPainted(false);
-		btnSearch.setPreferredSize(new Dimension(100, 33));
-		btnSearch.setForeground(Color.WHITE);
-		btnSearch.setFont(new Font("Helvetica", Font.BOLD, 14));
-		btnSearch.setBorder(new LineBorder(new Color(00, 153, 255), 2, true));
-		btnSearch.setBackground(new Color(00, 153, 255));
+		
 
-		bSearch1.add(lblSearchName);
-		bSearch1.add(Box.createHorizontalStrut(10));
-		bSearch1.add(tfSearch);
-		bSearch1.add(Box.createHorizontalStrut(20));
-		bSearch1.add(btnSearch);
+		
 
 		Box bSearch2 = Box.createHorizontalBox();
 //        JLabel lblSearchDate = new JLabel("Tìm theo ngày công chiếu");
@@ -167,8 +149,7 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		bSearch2.add(Box.createHorizontalStrut(10));
 		bSearch2.add(tfTo);
 
-		bFilter.add(bSearch1);
-		bFilter.add(Box.createVerticalStrut(10));
+		
 		bFilter.add(bSearch2);
 
 		JPanel pnTools = new JPanel();
@@ -265,31 +246,14 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 		pnWrap.add(pnBottom, BorderLayout.CENTER);
 		add(pnWrap, BorderLayout.CENTER);
 
-		tfSearch.addFocusListener(this);
+		
+		btnThongKe.addActionListener(this);
+		btnRefresh.addActionListener(this);
 
 		loadDataTable();
 	}
 
-	/**
-	 * placeholder tìm kiếm
-	 */
-	@Override
-	public void focusGained(FocusEvent e) {
-		if (tfSearch.getText().equals("Tìm kiếm theo mã, tên")) {
-			tfSearch.setFont(new Font("Helvetica", Font.PLAIN, 15));
-			tfSearch.setForeground(Color.BLACK);
-			tfSearch.setText("");
-		}
-	}
-
-	@Override
-	public void focusLost(FocusEvent e) {
-		if (tfSearch.getText().equals("")) {
-			tfSearch.setFont(new Font("Helvetica", Font.ITALIC, 15));
-			tfSearch.setForeground(Color.LIGHT_GRAY);
-			tfSearch.setText("Tìm kiếm theo mã, tên");
-		}
-	}
+	
 
 	private void loadDataTable() {
 		java.util.Date utilNgayBatDau = tfFrom.getDate();
@@ -310,26 +274,33 @@ public class ThongKeHoaDon extends JPanel implements FocusListener {
 				String tenNV = nhanVienDAO.getTenNVTheoMa(hd.getNhanVien().getMaNhanVien());
 				String tenKH = khachHangDAO.getTenKHTheoMa(hd.getKhachHang().getMaKhachHang());
 				double tongThu = cthdDAO.getTongThu(hd.getMaHoaDon(), ngayBatDau, ngayKetThuc);
-				tongDoanhThu += tongThu;
-				model.addRow(new Object[] { stt++, hd.getMaHoaDon(), hd.getNhanVien().getMaNhanVien(), tenNV,
-						hd.getKhachHang().getMaKhachHang(), tenKH, hd.getNgayLapHoaDon(), tongThu});
+				if (tongThu > 0) {
+					tongDoanhThu += tongThu;
+					model.addRow(new Object[] { stt++, hd.getMaHoaDon(), hd.getNhanVien().getMaNhanVien(), tenNV,
+							hd.getKhachHang().getMaKhachHang(), tenKH, hd.getNgayLapHoaDon(), tongThu});					
+				}
 			}
 			DecimalFormat decimalFormat = new DecimalFormat("###,###");
 	        String formattedTongDoanhThu = decimalFormat.format(tongDoanhThu);
 	        btnTongDoanhThu.setText(formattedTongDoanhThu + " VND");
-//	     // Sắp xếp dữ liệu theo cột "Doanh thu" giảm dần
-//	        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-//	        tableTK.setRowSorter(sorter);
-//	        ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
-//	        int columnIndexToSort = 5; // Index của cột "Doanh thu" (đếm từ 0)
-//	        sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING)); // Sắp xếp giảm dần
-//	        sorter.setSortKeys(sortKeys);
 		} else
 			JOptionPane.showMessageDialog(this, "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc!");
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object o = e.getSource();
+		if (o.equals(btnThongKe)) {
+			loadDataTable();
+		} else if (o.equals(btnRefresh)) {
+			tfFrom.setDate(dfNow);
+			tfTo.setDate(dfNow);
+			loadDataTable();
+		}
+	}
 
 	public static void main(String[] args) {
-		JFrame frame = new JFrame("Thống kê nhân viên");
+		JFrame frame = new JFrame("Thống kê hóa đơn");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ThongKeHoaDon tk1 = new ThongKeHoaDon();
 		frame.getContentPane().add(tk1);
