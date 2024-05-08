@@ -67,7 +67,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 
     public GiaoDienThanhToan() {
         setLayout(new BorderLayout());
-        lblTitle1 = new JLabel("Chọn bắp/nước");
+        lblTitle1 = new JLabel("Xem combo bắp/nước");
         pnTitle = new JPanel(new FlowLayout(FlowLayout.LEFT,20,30));
         pnTitle.add(lblTitle1);
         add(pnTitle, BorderLayout.NORTH);
@@ -83,15 +83,15 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 		Color blueDark = new Color(0, 153, 255);
 
        
-        String[] columnNames = {"Combo", "Số lượng", "Đơn giá(VNĐ)", "Tổng(VNĐ)"};
+        String[] columnNames = {"Combo","Đơn giá(VNĐ)"};
 
         Object[][] data = {
-                {"Bắp + Pepsi vị chanh lớn", 0, 60000, 0},
-                {"Bắp + Pepsi vị chanh vừa", 0, 80000, 0},
-                {"Bắp + Pepsi vị chanh lớn", 0, 100000, 0},
-                {"Bắp rang bơ vị phô mai nhỏ", 0, 80000, 0},
-                {"Bắp rang bơ vị phô mai vừa", 0, 100000,0},
-                {"Bắp rang bơ vị phô mai lớn", 0, 12000,0}
+                {"Bắp + Pepsi vị chanh lớn", 60000},
+                {"Bắp + Pepsi vị chanh vừa", 80000},
+                {"Bắp + Pepsi vị chanh lớn", 100000, },
+                {"Bắp rang bơ vị phô mai nhỏ", 80000},
+                {"Bắp rang bơ vị phô mai vừa", 100000},
+                {"Bắp rang bơ vị phô mai lớn", 12000}
         	};
 
         //BẢNG
@@ -107,16 +107,18 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageTextRenderer());
         // Tạo editor cho cột "Số lượng"
         TableColumn quantityColumn = table.getColumnModel().getColumn(1);
-        quantityColumn.setCellEditor(new QuantityEditor());
+//        quantityColumn.setCellEditor(new QuantityEditor());
         TableColumn quantityColumnSoluong = table.getColumnModel().getColumn(0); // Lấy cột "combo"
         quantityColumnSoluong.setPreferredWidth(200); // Đặt chiều rộng mong muốn
 
         // Set renderer cho các cột
+        
+       
+        
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa dữ liệu
         table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer); 
-        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Căn giữa cột "Đơn giá(VNĐ)"
-        table.getColumnModel().getColumn(3).setCellRenderer(centerRenderer); // Căn giữa cột "Tổng(VNĐ)"
+//        table.getColumnModel().getColumn(2).setCellRenderer(centerRenderer); // Căn giữa cột "Đơn giá(VNĐ)"
 
         // Set renderer cho tiêu đề cột
         DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
@@ -334,36 +336,19 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
         }
     }
 
-    // Editor cho cột "Số lượng"
-    static class QuantityEditor extends AbstractCellEditor implements TableCellEditor {
-        private JComboBox<Integer> comboBox;
+ 
 
-        public QuantityEditor() {
-            comboBox = new JComboBox<>();
-            for (int i = 0; i <= 10; i++) {
-                comboBox.addItem(i);
-            }
-
-            // Thêm sự kiện cho JComboBox
-            comboBox.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    fireEditingStopped(); // Khi giá trị được chọn thay đổi, chạy sự kiện fireEditingStopped
-                }
-            });
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return comboBox.getSelectedItem(); // Trả về giá trị đã chọn trong JComboBox
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            comboBox.setSelectedItem(value); // Đặt giá trị mặc định cho JComboBox
-            return comboBox; // Trả về JComboBox làm editor cho ô cụ thể
-        }
-    }
+//        @Override
+//        public Object getCellEditorValue() {
+//            return comboBox.getSelectedItem(); // Trả về giá trị đã chọn trong JComboBox
+//        }
+//
+//        @Override
+//        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+//            comboBox.setSelectedItem(value); // Đặt giá trị mặc định cho JComboBox
+//            return comboBox; // Trả về JComboBox làm editor cho ô cụ thể
+//        }
+//    }
     public static void setThongTinPhim(String ten,String rap,String phong,String suatChieu,String ghe,String thoiLuong,String theLoai) {
     	txtTen.setText(ten);
     	txtRap.setText(rap);
