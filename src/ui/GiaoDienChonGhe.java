@@ -47,8 +47,8 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
 
         JPanel datVe_panel = new JPanel();
         datVe_panel.setLayout(new BorderLayout());
-        datVe_button = new JButton("Đặt Vé");
-        datVe_button.setBackground(Color.red);
+        datVe_button = new JButton("");
+        datVe_button.setBackground(Color.white);
         datVe_button.setForeground(Color.white);
         datVe_button.setFont(new Font("Arial", Font.BOLD, 18));
         datVe_button.setPreferredSize(new Dimension(100, 40));

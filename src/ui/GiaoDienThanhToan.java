@@ -414,7 +414,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 		             hoaDon.setKhachHang(new KhachHang(maKhachHang));
 		             hoaDon.setNhanVien(new NhanVien(DangNhap.maNhanVien));
 		             hoaDonDAO.themHoaDonKhiCoTheThanhVien(hoaDon);
-		            JOptionPane.showMessageDialog(this, "Đã tạo hoá đơn thành công.");
+		            JOptionPane.showMessageDialog(this, "Đã lấy thông tin khách hàng thành công.");
 		        } 
 		        else {
 		            JOptionPane.showMessageDialog(this, "Không tìm thấy khách hàng với số điện thoại này.");
@@ -462,7 +462,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
 			 		        hoaDon.setNgayLapHoaDon(new Date());		        
 			 		        hoaDon.setNhanVien(new NhanVien(DangNhap.maNhanVien)); 		        		     
 			 		        hoaDonDAO.themHoaDonVoiKhachHangCuoiCung(hoaDon);		        
-			 		        JOptionPane.showMessageDialog(this, "Đã tạo hoá đơn thành công.");
+			 		        JOptionPane.showMessageDialog(this, "Đã tạo thông tin khách hàng thành công.");
 			            }
 			            
 				           
