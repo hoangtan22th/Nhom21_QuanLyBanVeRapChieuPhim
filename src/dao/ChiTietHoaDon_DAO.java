@@ -106,5 +106,27 @@ public class ChiTietHoaDon_DAO {
 		    }
 		    return sum;
 		}
+		
+		public double getTongThu(String maHoaDon, java.sql.Date ngayBatDau, java.sql.Date ngayKetThuc) {
+		    double total = 0;
+		    try {
+		    	ConnectDB.getIntance();
+				Connection con = ConnectDB.getConnection();
+		        String query = "select cthd.tongTien as total from hoadon hd join ChiTietHoaDon cthd on hd.maHoaDon = cthd.maHoaDon "
+		        		+ "where hd.maHoaDon = ? and ngayLapHD between ? and ?";
+		        PreparedStatement ps = con.prepareStatement(query);
+		        ps.setString(1, maHoaDon);
+		        ps.setDate(2, ngayBatDau);
+		        ps.setDate(3, ngayKetThuc);
+		        ResultSet rs = ps.executeQuery();
+		        if (rs.next()) {
+		            total = rs.getDouble("total");
+		        }
+		        
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		    return total;
+		}
 
 }

@@ -142,7 +142,7 @@ public class QuanLyHoaDon extends JPanel implements ActionListener, FocusListene
 			btnFilterDate.setBorder(new LineBorder(new Color(00, 153, 255), 2, true));
 			btnFilterDate.setBackground(new Color(00, 153, 255, 200));
 
-			bSearch2.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.white), "Tìm theo ngày công chiếu",
+			bSearch2.setBorder(BorderFactory.createTitledBorder(new LineBorder(Color.white), "Tìm theo ngày lập",
 					TitledBorder.LEFT, TitledBorder.TOP, new Font("Helvetica", Font.PLAIN, 14), Color.gray));
 //	        bSearch2.add(lblSearchDate);
 			bSearch2.add(lblFrom);
