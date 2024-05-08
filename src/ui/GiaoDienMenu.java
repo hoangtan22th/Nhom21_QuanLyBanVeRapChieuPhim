@@ -184,7 +184,7 @@ public class GiaoDienMenu extends JPanel implements ActionListener, MouseListene
 //        panel đẩy
 		pnDay = new JPanel();
 		pnDay.setBackground(orangeDark);
-		pnDay.setPreferredSize(new Dimension(210, 250));
+		pnDay.setPreferredSize(new Dimension(210, 187));
 		add(pnDay);
 
 //      panel Đăng xuất
@@ -247,7 +247,11 @@ public class GiaoDienMenu extends JPanel implements ActionListener, MouseListene
 		} else if (source.equals(btnQuanLi)) {
 			mainFrame.displayContent("QlPhim");
 		}else if(source.equals(btnDangxuat)) {
-			 mainFrame.hienThiGiaoDienDangNhap();
+			int option = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn đăng xuất không?", "Xác nhận đăng xuất", JOptionPane.YES_NO_OPTION);
+		    if (option == JOptionPane.YES_OPTION) {
+		        // Nếu người dùng chọn "Có", hiển thị giao diện đăng nhập
+		        mainFrame.hienThiGiaoDienDangNhap();
+		    }
 		}else if(source.equals(btnQLHoadon)) {
 			 mainFrame.displayContent("QlHoaDon");
 		}else if(source.equals(btnThongKe)) {
