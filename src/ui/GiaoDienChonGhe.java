@@ -11,23 +11,28 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
     private JButton datVe_button;
     private List<JButton> seatButtons; // Danh sách các nút ghế
     private List<JButton> selectedSeats; // Danh sách các nút ghế đã chọn
-
+    private JLabel seatLabel;
+	private JButton clickedButton;
+    public static String soGhe;
     public GiaoDienChonGhe() {
         setLayout(new BorderLayout());
         selectedSeats = new ArrayList<>();
         HangGhe(); // Gọi phương thức HangGhe() để thêm chức năng chọn ghế
         JPanel south = new JPanel(new BorderLayout());
         south.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 10));
-
+ // thông tin phần dưới
+        
+        
+        
         Box x = Box.createVerticalBox();
-        Label info_wrapper1 = new Label("Lật Mặt 6");
+        Label info_wrapper1 = new Label("");
         info_wrapper1.setFont(new Font("Arial", Font.BOLD, 23));
-        Label info_wrapper2 = new Label("2D Phụ Đề Anh");
+        Label info_wrapper2 = new Label("");
 
         Box y = Box.createHorizontalBox();
-        Label total = new Label("Tổng Tiền:");
+        Label total = new Label("");
         total.setFont(new Font("Arial", Font.BOLD, 23));
-        Label order_Total = new Label("000.000đ");
+        Label order_Total = new Label("");
         order_Total.setFont(new Font("Arial", Font.BOLD, 23));
 
         JPanel labelsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -51,13 +56,15 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
         datVe_panel.add(datVe_button, BorderLayout.SOUTH);
         south.add(datVe_panel, BorderLayout.EAST);
 
+        seatLabel = new JLabel();
+        
         JPanel center = new JPanel();
         center.setBorder(new EmptyBorder(0, 30, 0, 0));
         center.setLayout(new BorderLayout());
-        JLabel block_seats = new JLabel("Thường A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13");
+        JLabel block_seats = new JLabel("");
         block_seats.setFont(new Font("Arial", Font.BOLD, 21));
 
-        center.add(block_seats, BorderLayout.NORTH);
+        center.add(seatLabel, BorderLayout.NORTH);
         south.add(center);
 
         add(south, BorderLayout.SOUTH);
@@ -167,20 +174,40 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object o = e.getSource();
         if (o instanceof JButton) {
-            JButton clickedButton = (JButton) o;
-            if (seatButtons.contains(clickedButton)) { // Kiểm tra xem nút được click có trong danh sách ghế không
-                Color currentColor = clickedButton.getBackground();
-                if (currentColor.equals(Color.darkGray)) {
-                    clickedButton.setBackground(getSeatColor(clickedButton));
-                    selectedSeats.remove(clickedButton); // Xóa nút khỏi danh sách đã chọn nếu bỏ chọn
-                } else {
-                    clickedButton.setBackground(Color.darkGray);
-                    selectedSeats.add(clickedButton); // Thêm nút vào danh sách đã chọn nếu chọn
-                }
-//                printSelectedSeatCount(); // In số lượng và tên các ghế đã chọn
+            clickedButton = (JButton) o;
+            if (seatButtons.contains(clickedButton)) {
+                handleSeatSelection(clickedButton);
+                updateSeatLabel(clickedButton);
             }
         }
     }
+
+    private void handleSeatSelection(JButton button) {
+        Color currentColor = button.getBackground();
+        if (currentColor.equals(Color.darkGray)) {
+            button.setBackground(getSeatColor(button));
+            selectedSeats.remove(button);
+        } else {
+            button.setBackground(Color.darkGray);
+            selectedSeats.add(button);
+        }
+    }
+
+    private void updateSeatLabel(JButton button) {
+        StringBuilder seatNames = new StringBuilder();
+        for (JButton selectedSeat : selectedSeats) {
+            if (seatNames.length() > 0) {
+                seatNames.append(", ");
+            }
+            seatNames.append(selectedSeat.getText());
+        }
+        seatLabel.setText(seatNames.toString());
+        soGhe = seatLabel.getText();
+//        JOptionPane.showMessageDialog(this, soGhe);
+    }
+    
+
+
     
     public List<JButton> getSelectedSeats() {
         return selectedSeats;
@@ -188,12 +215,7 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
 
 
     private Color getSeatColor(JButton seatButton) {
-        // Thực hiện xử lý logic để xác định màu ban đầu của ghế dựa vào vị trí của nút ghế
-        // Trong ví dụ này, chúng ta sẽ trả về màu tùy thuộc vào vị trí của ghế
-        // Ví dụ:
-        // Nếu ghế nằm trong các hàng 'A' - 'D', sẽ trả về màu đặc trưng cho các ghế VIP
-        // Nếu ghế nằm trong các hàng 'E' - 'I', sẽ trả về màu đặc trưng cho các ghế thường
-        // Tùy thuộc vào logic cụ thể của bạn, bạn có thể thay đổi cách xác định màu của ghế ở đây
+        
         if (seatButton.getText().charAt(0) >= 'A' && seatButton.getText().charAt(0) <= 'D') {
             return new  Color(192, 192, 192); // Màu cho ghế thường
         } 
@@ -205,24 +227,4 @@ public class GiaoDienChonGhe extends JPanel implements ActionListener {
             return new Color (255, 165, 0); // Màu cho ghế VIP
         }
     }
-//    public static void main(String[] args) {
-//        SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("GiaoDienChonGhe");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.getContentPane().add(new GiaoDienChonGhe());
-//            frame.pack();
-//            frame.setLocationRelativeTo(null);
-//            frame.setVisible(true);
-//            
-//        });
-//        
-//    }
-    
-//    private void printSelectedSeatCount() {
-//        System.out.println("Số ghế được chọn: " + selectedSeats.size());
-//        System.out.println("Các ghế đã chọn:");
-//        for (JButton seat : selectedSeats) {
-//            System.out.println(seat.getText());
-//        }
-//    }
 }

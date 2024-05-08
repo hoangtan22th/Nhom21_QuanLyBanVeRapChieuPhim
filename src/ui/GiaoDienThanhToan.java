@@ -369,7 +369,7 @@ public class GiaoDienThanhToan extends JPanel implements ActionListener{
     	txtRap.setText(rap);
     	txtPhong.setText(phong);
     	txtSuatChieu.setText(suatChieu);
-    	txtGhe.setText(ghe);
+    	txtGhe.setText(GiaoDienChonGhe.soGhe);
     	txtThoiLuong.setText(thoiLuong);
     	txtTheLoai.setText(theLoai); // đã đổi thành thời gian
     }
